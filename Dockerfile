@@ -1,5 +1,5 @@
 # Use the official Python image from the DockerHub
-FROM python:3.12.0rc2
+FROM python:3.11
 
 # Set the working directory in the container
 WORKDIR /code
