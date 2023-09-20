@@ -1,3 +1,9 @@
 fastapi==0.103.1
 uvicorn==0.23.2
+sqlalchemy==2.0.21
+pydantic==2.3.0
+# mysqlclient==2.2.0
+pymysql==1.1.0
+oauthlib==3.2.2
+PyJWT==2.8.0
 # any other dependencies we need
