@@ -2,15 +2,17 @@ version: '3.8'
 
 services:
   web:
+    container_name: tiptrac-web
     build: .
     ports:
-      - "8000:80"
+      - "80:80"  # Map port 80 of host to port 80 of container
     depends_on:
       - db
     environment:
       DATABASE_URL: "mysql+pymysql://root:password@db/mydatabase"
     
   db:
+    container_name: tiptrac-mysql
     image: mysql:8
     environment:
       MYSQL_DATABASE: mydatabase
