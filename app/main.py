@@ -60,3 +60,9 @@ def get_project(project_id: int):
 @app.get("/projects/{project_id}/tasks")
 def get_project_tasks(project_id: int):
     return PROJECTS[project_id - 1]["tasks"]
+
+
+# Retrieve a task from a project
+@app.get("/projects/{project_id}/tasks/{task_id}")
+def get_project_task(project_id: int, task_id: int):
+    return PROJECTS[project_id - 1]["tasks"][task_id - 1]
