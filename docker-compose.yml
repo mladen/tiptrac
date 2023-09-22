@@ -8,12 +8,16 @@ services:
       - "80:80"  # Map port 80 of host to port 80 of container
     depends_on:
       - db
+    networks:
+      - tiptrac-network
     environment:
       DATABASE_URL: "mysql+pymysql://mladen:password@db/tiptracdb"
     
   db:
     container_name: tiptrac-mysql
     image: mysql:8
+    networks:
+      - tiptrac-network
     environment:
       MYSQL_DATABASE: tiptracdb # Database name
       MYSQL_USER: mladen  # New user
@@ -23,6 +27,10 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+
+networks:
+  tiptrac-network:
+    name: tiptrac-network
 
 volumes:
   mysql-data:
