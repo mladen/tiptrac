@@ -47,10 +47,16 @@ PROJECTS = [
 
 
 @app.get("/")
-def read_all_projects():
+def get_all_projects():
     return {"Projects": PROJECTS}
 
 
 @app.get("/projects/{project_id}")
-def read_project(project_id: int, q: Union[str, None] = None):
-    return {"project_id": project_id, "q": q}
+def get_project(project_id: int):
+    return PROJECTS[project_id - 1]
+
+
+# Retrieve all tasks from a project
+@app.get("/projects/{project_id}/tasks")
+def get_project_tasks(project_id: int):
+    return PROJECTS[project_id - 1]["tasks"]
