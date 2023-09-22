@@ -46,11 +46,13 @@ PROJECTS = [
 ]
 
 
+# Retrieve all projects
 @app.get("/")
 def get_all_projects():
     return {"Projects": PROJECTS}
 
 
+# Retrieve a project
 @app.get("/projects/{project_id}")
 def get_project(project_id: int):
     return PROJECTS[project_id - 1]
