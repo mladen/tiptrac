@@ -4,10 +4,25 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+TASKS = [
+    {
+        "id": 1,
+        "title": "Buy groceries",
+        "description": "Milk, Cheese, Pizza, Fruit",
+        "done": False,
+    },
+    {
+        "id": 2,
+        "title": "Create a Time and Project Tracker",
+        "description": "Need to create a time and project tracker for myself",
+        "done": False,
+    },
+]
+
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_all_tasks():
+    return {"Tasks": TASKS}
 
 
 @app.get("/items/{item_id}")
