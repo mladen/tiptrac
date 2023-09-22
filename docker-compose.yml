@@ -6,6 +6,8 @@ services:
     build: .
     ports:
       - "80:80"  # Map port 80 of host to port 80 of container
+    volumes:
+      - ./app:/code/app  # Mount the host's 'app' folder into '/code/app' in the container
     depends_on:
       - db
     networks:
