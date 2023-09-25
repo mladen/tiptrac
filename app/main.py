@@ -52,15 +52,16 @@ class Task(BaseModel):
     id: int
     title: str
     description: str
-    done: bool
+    done: bool = False
 
 
 class Project(BaseModel):
     id: int
     title: str
     description: str
-    done: bool
-    tasks: List[Task]
+    done: bool = False
+    # List of Tasks should be optional
+    tasks: List[Task] = []
 
 
 # GET
