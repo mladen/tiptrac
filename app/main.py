@@ -91,8 +91,7 @@ async def get_project_task(project_id: int, task_id: int):
 # POST
 # Post a project
 @app.post("/projects")
-async def create_project(project: dict):
-    # async def create_project(project: Project):
+async def create_project(project: Project):
     PROJECTS.append(project)
     return {"Project": project}
 
