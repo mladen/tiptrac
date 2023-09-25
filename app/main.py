@@ -58,7 +58,7 @@ class Task(BaseModel):
 
 class Project(BaseModel):
     id: UUID
-    title: str
+    title: str = Field(..., min_length=3, max_length=50)
     description: str
     done: bool = False
     # List of Tasks should be optional
