@@ -1,7 +1,7 @@
 from typing import Union
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 from uuid import UUID
 
@@ -51,7 +51,7 @@ PROJECTS = [
 
 class Task(BaseModel):
     id: UUID
-    title: str
+    title: str = Field(..., min_length=3, max_length=50)
     description: str
     done: bool = False
 
