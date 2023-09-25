@@ -2,7 +2,7 @@ from typing import Union
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 app = FastAPI()
@@ -52,14 +52,18 @@ PROJECTS = [
 class Task(BaseModel):
     id: UUID
     title: str = Field(..., min_length=3, max_length=50)
-    description: str
+    description: Optional[str] = Field(
+        title="Description of the task", min_length=3, max_length=50
+    )
     done: bool = False
 
 
 class Project(BaseModel):
     id: UUID
     title: str = Field(..., min_length=3, max_length=50)
-    description: str
+    description: Optional[str] = Field(
+        title="Description of the project", min_length=3, max_length=50
+    )
     done: bool = False
     # List of Tasks should be optional
     tasks: List[Task] = []
