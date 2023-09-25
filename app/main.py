@@ -3,6 +3,7 @@ from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
+from uuid import UUID
 
 app = FastAPI()
 
@@ -49,14 +50,14 @@ PROJECTS = [
 
 
 class Task(BaseModel):
-    id: int
+    id: UUID
     title: str
     description: str
     done: bool = False
 
 
 class Project(BaseModel):
-    id: int
+    id: UUID
     title: str
     description: str
     done: bool = False
