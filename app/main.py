@@ -79,3 +79,28 @@ async def update_project(project_id: UUID, project: Project):
     PROJECTS[index]["id"] = project_id  # Ensure we maintain the original UUID
 
     return {"Project": project}
+
+
+# Update a task
+@app.put("/projects/{project_id}/tasks/{task_id}", tags=["tasks"])
+async def update_project_task(project_id: UUID, task_id: UUID, task: Task):
+    # Check if the project exists
+    existing_project = next(
+        (proj for proj in PROJECTS if proj["id"] == project_id), None
+    )
+    if not existing_project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # Check if the task exists
+    existing_task = next(
+        (tsk for tsk in existing_project["tasks"] if tsk["id"] == task_id), None
+    )
+    if not existing_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Logic for updating the task
+    index = existing_project["tasks"].index(existing_task)
+    existing_project["tasks"][index] = task.dict()
+    existing_project["tasks"][index]["id"] = task_id
+
+    return {"Task": task}
