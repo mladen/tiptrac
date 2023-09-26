@@ -3,45 +3,48 @@ from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 app = FastAPI()
 
 PROJECTS = [
     {
-        "id": 1,
+        "id": uuid4(),
         "title": "Create a Time and Project Tracker",
         "description": "Need to create a time and project tracker for myself",
+        "assigned_to": None,
         "done": False,
         "tasks": [
             {
-                "id": 1,
+                "id": uuid4(),
                 "title": "Setup the project",
                 "description": "Setup the project with FastAPI",
+                "time_spent": 0,  # Time spent on this task
+                "assigned_to": None,  # The person responsible for completing this task
                 "done": False,
             },
             {
-                "id": 2,
+                "id": uuid4(),
                 "title": "Create the project model",
                 "description": "Create the project model with Pydantic",
+                "time_spent": 0,
+                "assigned_to": None,
                 "done": False,
             },
             {
-                "id": 3,
+                "id": uuid4(),
                 "title": "Create the project endpoints",
                 "description": "Create the project endpoints with FastAPI",
+                "time_spent": 0,
+                "assigned_to": None,
                 "done": False,
             },
             {
-                "id": 4,
+                "id": uuid4(),
                 "title": "Create the project database",
                 "description": "Create the project database with SQLAlchemy",
-                "done": False,
-            },
-            {
-                "id": 5,
-                "title": "Create the project database",
-                "description": "Create the project database with SQLAlchemy",
+                "time_spent": 0,
+                "assigned_to": None,
                 "done": False,
             },
         ],
@@ -53,7 +56,14 @@ class Task(BaseModel):
     id: UUID
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
-        title="Description of the task", min_length=3, max_length=50
+        None, title="Description of the task", min_length=3, max_length=50
+    )
+    time_spent: int = Field(0, description="Time spent on this task in minutes")
+    assigned_to: Optional[str] = Field(
+        None,
+        description="The person responsible for completing this task",
+        min_length=3,
+        max_length=50,
     )
     done: bool = False
 
@@ -62,11 +72,16 @@ class Project(BaseModel):
     id: UUID
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
-        title="Description of the project", min_length=3, max_length=50
+        None, title="Description of the project", min_length=3, max_length=50
+    )
+    assigned_to: Optional[str] = Field(
+        None,
+        description="The person responsible for this project",
+        min_length=3,
+        max_length=50,
     )
     done: bool = False
-    # List of Tasks should be optional
-    tasks: List[Task] = []
+    tasks: List[Task] = Field([], description="List of tasks related to this project")
 
 
 # GET
