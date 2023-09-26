@@ -104,3 +104,19 @@ async def update_project_task(project_id: UUID, task_id: UUID, task: Task):
     existing_project["tasks"][index]["id"] = task_id
 
     return {"Task": task}
+
+
+# DELETE
+# Delete a project
+@app.delete("/projects/{project_id}", tags=["projects"])
+async def delete_project(project_id: UUID):
+    # Check if the project exists
+    existing_project = next(
+        (proj for proj in PROJECTS if proj["id"] == project_id), None
+    )
+    if not existing_project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # Logic for deleting the project
+    PROJECTS.remove(existing_project)
+    return {"message": "Project deleted successfully"}
