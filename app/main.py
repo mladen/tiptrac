@@ -1,8 +1,12 @@
 from typing import Union
 
 from fastapi import FastAPI, APIRouter, HTTPException
+from pydantic import UUID4
+from uuid import UUID
+
 from .models import Project, Task  # importing models
 from .test_data import PROJECTS  # importing test data
+
 
 tags_metadata = [
     {
@@ -53,6 +57,25 @@ async def create_project(project: Project):
 
 # Post a task to a project
 @app.post("/projects/{project_id}/tasks", tags=["tasks"])
-async def create_project_task(project_id: int, task: dict):
+async def create_project_task(project_id: int, task: Task):
     PROJECTS[project_id - 1]["tasks"].append(task)
     return {"Task": task}
+
+
+# PUT
+# Update a project
+@app.put("/projects/{project_id}", tags=["projects"])
+async def update_project(project_id: UUID, project: Project):
+    # Check if the project exists
+    existing_project = next(  # next() returns the next item in an iterator
+        (proj for proj in PROJECTS if proj["id"] == project_id), None
+    )
+    if not existing_project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # Logic for updating the project
+    index = PROJECTS.index(existing_project)
+    PROJECTS[index] = project.dict()
+    PROJECTS[index]["id"] = project_id  # Ensure we maintain the original UUID
+
+    return {"Project": project}
