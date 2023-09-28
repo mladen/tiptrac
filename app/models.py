@@ -2,6 +2,34 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import UUID, uuid4
 
+from enum import Enum
+
+
+# ENUMERATIONS
+# Enumerations for the role field (admin, manager, user)
+class Role(str, Enum):
+    ADMIN = "admin"
+    MANAGER = "manager"
+    EMPLOYEE = "employee"
+
+
+# Enumerations for the status field (todo, in_progress, done)
+class Status(str, Enum):
+    TODO = "todo"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+
+
+# MODELS
+class User(BaseModel):
+    id: UUID
+    name: str = Field(..., min_length=3, max_length=50)
+    email: str = Field(..., min_length=3, max_length=50)
+    role: Role = Field(..., description="Role of the user")
+    projects: List[UUID] = Field(
+        [], description="List of projects related to this user"
+    )
+
 
 class Task(BaseModel):
     id: UUID
@@ -17,6 +45,7 @@ class Task(BaseModel):
         max_length=50,
     )
     done: bool = False
+    status: Status = Field(..., description="Status of the task")
 
 
 class Project(BaseModel):
@@ -32,4 +61,5 @@ class Project(BaseModel):
         max_length=50,
     )
     done: bool = False
+    status: Status = Field(..., description="Status of the project")
     tasks: List[Task] = Field([], description="List of tasks related to this project")
