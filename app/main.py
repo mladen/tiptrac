@@ -5,7 +5,7 @@ from pydantic import UUID4
 from typing import Optional
 from uuid import UUID
 
-from .models import User, Project, Task  # importing models
+from .schemas import User, Project, Task  # importing models
 from .test_data import PROJECTS, USERS  # importing test data
 
 
