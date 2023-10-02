@@ -2,22 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from enum import Enum
-
-
-# ENUMERATIONS
-# Enumerations for the role field (admin, manager, user)
-class Role(str, Enum):
-    ADMIN = "admin"
-    MANAGER = "manager"
-    EMPLOYEE = "employee"
-
-
-# Enumerations for the status field (todo, in_progress, done)
-class Status(str, Enum):
-    TODO = "todo"
-    IN_PROGRESS = "in_progress"
-    DONE = "done"
+from .enums import Role, Status
 
 
 # MODELS
