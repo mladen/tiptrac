@@ -1,6 +1,6 @@
 from typing import Union
 
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Form
 from pydantic import UUID4
 from uuid import UUID
 
@@ -27,10 +27,16 @@ app = FastAPI(openapi_tags=tags_metadata)
 
 
 # USER
+# Login
+@app.post("/login", tags=["users"])
+async def login(username: str = Form(), password: str = Form()):
+    return {"username": username, "password": password}
+
+
 # Retrieve all users
 @app.get("/users", tags=["users"])
 async def get_all_users():
-    return {"Users": []}
+    return {"Users": USERS}
 
 
 # Create a user
@@ -99,7 +105,7 @@ async def delete_user(user_id: UUID):
 
 # PROJECT
 # Retrieve all projects
-@app.get("/", tags=["projects"])
+@app.get("/projects", tags=["projects"])
 async def get_all_projects():
     return {"Projects": PROJECTS}
 
