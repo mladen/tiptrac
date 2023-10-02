@@ -1,6 +1,6 @@
 from typing import Union
 
-from fastapi import FastAPI, APIRouter, HTTPException, Form
+from fastapi import FastAPI, APIRouter, HTTPException, Form, Header
 from pydantic import UUID4
 from uuid import UUID
 
@@ -21,9 +21,19 @@ tags_metadata = [
         "name": "tasks",
         "description": "Operations related to tasks within projects.",
     },
+    {
+        "name": "header",
+        "description": "Operations related to headers.",
+    },
 ]
 
 app = FastAPI(openapi_tags=tags_metadata)
+
+
+# Header
+@app.post("/header", tags=["header"])
+async def get_header(random_header: str = Header(None)):
+    return {"Random-Header": random_header}
 
 
 # USER
