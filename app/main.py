@@ -2,6 +2,7 @@ from typing import Union
 
 from fastapi import FastAPI, APIRouter, HTTPException, Form, Header
 from pydantic import UUID4
+from typing import Optional
 from uuid import UUID
 
 from .models import User, Project, Task  # importing models
@@ -38,9 +39,16 @@ async def get_header(random_header: str = Header(None)):
 
 # USER
 # Login
-@app.post("/login", tags=["users"])
-async def login(username: str = Form(), password: str = Form()):
-    return {"username": username, "password": password}
+@app.post("/login/", tags=["users"])
+async def login(
+    project_position: int,  # Path parameter (required) which represents the position in the PROJECTS list
+    username: Optional[str] = Header(None),
+    password: Optional[str] = Header(None),
+):
+    if username == "FastAPIUser" and password == "pwd1234!":
+        return PROJECTS[project_position - 1]
+    else:
+        raise HTTPException(status_code=400, detail="Missing username or password")
 
 
 # Retrieve all users
