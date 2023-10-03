@@ -1,3 +1,5 @@
+# Pydantic models that define and validate the shape of API data
+
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import UUID, uuid4
@@ -5,7 +7,6 @@ from uuid import UUID, uuid4
 from .enums import Role, Status
 
 
-# MODELS
 class User(BaseModel):
     id: UUID
     name: str = Field(..., min_length=3, max_length=50)
