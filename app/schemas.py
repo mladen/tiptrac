@@ -23,7 +23,10 @@ class Task(BaseModel):
     description: Optional[str] = Field(
         None, title="Description of the task", max_length=50
     )
-    time_spent: int = Field(0, description="Time spent on this task in minutes")
+    time_estimation: int = Field(
+        0, description="Estimated time for the task in minutes"
+    )
+    time_spent: int = Field(0, description="Time already spent on the task in minutes")
     assigned_to: Optional[UUID] = Field(
         None, description="The user ID responsible for completing this task"
     )
@@ -35,6 +38,12 @@ class Project(BaseModel):
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
         None, title="Description of the project", max_length=50
+    )
+    time_estimation: int = Field(
+        0, description="Estimated time for the project in minutes"
+    )
+    time_spent: int = Field(
+        0, description="Time already spent on the project in minutes"
     )
     assigned_to: Optional[UUID] = Field(
         None, description="The user ID responsible for this project"
