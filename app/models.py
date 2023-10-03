@@ -24,7 +24,9 @@ class Project(Base):
     title = Column(String, unique=True, index=True)
     description = Column(String)
     assigned_to = Column(Integer, ForeignKey("users.id"))
-    status = Column(Boolean, default=Status.TODO)
+    status = Column(
+        String, default=Status.TODO
+    )  # This cannot be Boolean because we have more than 2 statuses
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
@@ -39,4 +41,6 @@ class Task(Base):
     updated_at = Column(DateTime)
     user_id = Column(Integer, ForeignKey("users.id"))
     project_id = Column(Integer, ForeignKey("projects.id"))
-    status = Column(Boolean, default=Status.TODO)
+    status = Column(
+        String, default=Status.TODO
+    )  # This cannot be Boolean because we have more than 2 statuses
