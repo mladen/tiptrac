@@ -1,6 +1,6 @@
 # Database models
 
-from sqlalchemy import Boolean, Column, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Boolean, Column, String, DateTime, ForeignKey, Enum, Integer
 from sqlalchemy.sql import func
 from uuid import uuid4
 
@@ -43,8 +43,9 @@ class Task(Base):
     id = Column(
         String(36), primary_key=True, default=str(uuid4()), unique=True, index=True
     )
-    name = Column(String, unique=True, index=True)
+    title = Column(String, unique=True, index=True)
     description = Column(String)
+    time_spent = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     user_id = Column(
