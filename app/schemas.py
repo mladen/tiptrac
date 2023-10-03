@@ -30,7 +30,7 @@ class Task(BaseModel):
     assigned_to: Optional[UUID] = Field(
         None, description="The user ID responsible for completing this task"
     )
-    status: Status = Field(..., description="Status of the task", default=Status.TODO)
+    status: Status = Field(default=Status.TODO, description="Status of the task")
 
 
 class Project(BaseModel):
@@ -48,7 +48,5 @@ class Project(BaseModel):
     assigned_to: Optional[UUID] = Field(
         None, description="The user ID responsible for this project"
     )
-    status: Status = Field(
-        ..., description="Status of the project", default=Status.TODO
-    )
+    status: Status = Field(default=Status.TODO, description="Status of the project")
     tasks: List[Task] = Field([], description="List of tasks related to this project")
