@@ -35,6 +35,12 @@ class Project(Base):
     status = Column(Enum(Status), default=Status.TODO, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    time_estimation = Column(
+        Integer, default=0
+    )  # Estimated time for the project in minutes
+    time_spent = Column(
+        Integer, default=0
+    )  # Time already spent on the project in minutes
 
 
 class Task(Base):
@@ -45,7 +51,10 @@ class Task(Base):
     )
     title = Column(String, unique=True, index=True)
     description = Column(String)
-    time_spent = Column(Integer, default=0)
+    time_estimation = Column(
+        Integer, default=0
+    )  # Estimated time for the task in minutes
+    time_spent = Column(Integer, default=0)  # Time already spent on the task in minutes
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     user_id = Column(
