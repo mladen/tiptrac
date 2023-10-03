@@ -1,15 +1,23 @@
 # Database models
 
 from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey
-from database import Base
+from uuid import UUID, uuid4
 
+from database import Base
 from .enums import Role, Status
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        UUID(as_uuid=True),
+        default=uuid4,
+        primary_key=True,
+        unique=True,
+        index=True,
+        nullable=False,
+    )
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     role = Column(String)
@@ -20,7 +28,14 @@ class User(Base):
 class Project(Base):
     __tablename__ = "projects"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        UUID(as_uuid=True),
+        default=uuid4,
+        primary_key=True,
+        unique=True,
+        index=True,
+        nullable=False,
+    )
     title = Column(String, unique=True, index=True)
     description = Column(String)
     assigned_to = Column(Integer, ForeignKey("users.id"))
@@ -34,7 +49,14 @@ class Project(Base):
 class Task(Base):
     __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        UUID(as_uuid=True),
+        default=uuid4,
+        primary_key=True,
+        unique=True,
+        index=True,
+        nullable=False,
+    )
     name = Column(String, unique=True, index=True)
     description = Column(String)
     created_at = Column(DateTime)
