@@ -2,29 +2,35 @@ version: "3.8"
 
 services:
   web:
+    env_file:
+      - .env
     container_name: tiptrac-web
     build: .
     ports:
       - "80:80" # Map port 80 of host to port 80 of container
     volumes:
-      - ./app:/code/app # Mount the host's 'app' folder into '/code/app' in the container
+      # - ./app:/code/app # Mount the host's 'app' folder into '/code/app' in the container
+
+      # Since we're aiming for a development setup where we want changes in your code
+      # to reflect inside the Docker container without rebuilding the image, we should
+      # mount the entire codebase as a volume, not just the app directory.
+      # This ensures that changes to requirements.txt and other files outside the app
+      # directory also get reflected
+      - .:/code
     depends_on:
       - db
     networks:
       - tiptrac-network
     environment:
-      DATABASE_URL: "mysql+pymysql://mladen:password@db/tiptracdb"
+      DATABASE_URL: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db/${MYSQL_DATABASE}"
 
   db:
+    env_file:
+      - .env
     container_name: tiptrac-mysql
     image: mysql:8
     networks:
       - tiptrac-network
-    environment:
-      MYSQL_DATABASE: tiptracdb # Database name
-      MYSQL_USER: mladen # New user
-      MYSQL_PASSWORD: pwd403shr # Password for new user
-      MYSQL_ROOT_PASSWORD: 4x{;tXaTw~DWAhoWGRI.
     ports:
       - "3306:3306"
     volumes:
