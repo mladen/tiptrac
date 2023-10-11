@@ -1,12 +1,22 @@
 from typing import Union
 
-from fastapi import FastAPI, APIRouter, HTTPException, Form, Header
+from fastapi import FastAPI, APIRouter, HTTPException, Form, Header, Depends, status
 from pydantic import UUID4
-from typing import Optional
+from typing import Optional, Annotated
 from uuid import UUID
+
 
 from .schemas import User, Project, Task  # importing models
 from .test_data import PROJECTS, USERS  # importing test data
+
+# from .database import database  # importing database
+
+# from sqlalchemy.orm import Session
+from .database import engine, SessionLocal, Session
+
+from app import (
+    models,
+)  # imports models from app/models.py (which imports Base from app/database.py)
 
 
 tags_metadata = [
@@ -26,15 +36,11 @@ tags_metadata = [
         "name": "header",
         "description": "Operations related to headers.",
     },
-]
+]  # OpenAPI tags
 
 app = FastAPI(openapi_tags=tags_metadata)
 
-
-# Header
-@app.post("/header", tags=["header"])
-async def get_header(random_header: str = Header(None)):
-    return {"Random-Header": random_header}
+models.Base.metadata.create_all(bind=engine)  # Creates the database tables
 
 
 # USER
