@@ -43,6 +43,22 @@ app = FastAPI(openapi_tags=tags_metadata)
 models.Base.metadata.create_all(bind=engine)  # Creates the database tables
 
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+db_dependency = Annotated[Session, Depends(get_db)]
+
+
+@app.get("/")
+async def root():
+    return {"Message": "Hello World!"}
+
+
 # USER
 # Login
 @app.post("/login/", tags=["users"])
