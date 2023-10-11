@@ -40,7 +40,9 @@ tags_metadata = [
 
 app = FastAPI(openapi_tags=tags_metadata)
 
-models.Base.metadata.create_all(bind=engine)  # Creates the database tables
+models.Base.metadata.create_all(
+    bind=engine
+)  # Creates the database tables (if they don't exist) when the application starts
 
 
 def get_db():
