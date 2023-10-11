@@ -4,7 +4,7 @@ from sqlalchemy import Boolean, Column, String, DateTime, ForeignKey, Enum, Inte
 from sqlalchemy.sql import func
 from uuid import uuid4
 
-from database import Base
+from .database import Base
 from .enums import Role, Status
 
 
