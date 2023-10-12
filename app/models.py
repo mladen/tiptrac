@@ -14,7 +14,7 @@ class User(Base):
     id = Column(
         String(36), primary_key=True, default=str(uuid4()), unique=True, index=True
     )
-    username = Column(String(50), unique=True, index=True)
+    name = Column(String(50), unique=True, index=True)
     email = Column(String(70), unique=True, index=True)
     role = Column(Enum(Role), index=True)
     hashed_password = Column(String(255))
