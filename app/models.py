@@ -29,7 +29,7 @@ class Project(Base):
     )
     title = Column(String(255), unique=True, index=True)
     description = Column(String(255))
-    assigned_to = Column(
+    assigned_to_user = Column(
         String(36), ForeignKey("users.id")
     )  # Because a User's id is a UUID
     status = Column(Enum(Status), default=Status.TODO, index=True)
@@ -57,10 +57,10 @@ class Task(Base):
     time_spent = Column(Integer, default=0)  # Time already spent on the task in minutes
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    user_id = Column(
+    assigned_to_user = Column(
         String(36), ForeignKey("users.id")
     )  # Because a User's id is a UUID
-    project_id = Column(
+    belongs_to_project = Column(
         String(36), ForeignKey("projects.id")
     )  # Because a Project's id is a UUID
     status = Column(Enum(Status), default=Status.TODO, index=True)
