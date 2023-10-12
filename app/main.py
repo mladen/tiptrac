@@ -2,21 +2,18 @@ from typing import Union
 
 from fastapi import FastAPI, APIRouter, HTTPException, Form, Header, Depends, status
 from pydantic import UUID4
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 from uuid import UUID
 
 
-from .schemas import User, Project, Task  # importing models
+# from .schemas import User, UserResponse, Project, Task  # importing models
+from . import schemas, models  # importing Pydantic models and DB models
 from .test_data import PROJECTS, USERS  # importing test data
 
 # from .database import database  # importing database
 
 # from sqlalchemy.orm import Session
 from .database import engine, SessionLocal, Session
-
-from app import (
-    models,
-)  # imports models from app/models.py (which imports Base from app/database.py)
 
 
 tags_metadata = [
@@ -56,9 +53,16 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
-@app.get("/")
-async def root():
-    return {"Message": "Hello World!"}
+@app.get("/", response_model=List[schemas.UserResponse], tags=["users"])
+async def read_all(db: Session = Depends(get_db)):
+    db_users = db.query(models.User).all()  # Querying the database
+    # Converting SQLAlchemy models to Pydantic models before returning
+    return [
+        schemas.UserResponse(
+            id=user.id, name=user.name, email=user.email, role=user.role, projects=[]
+        )
+        for user in db_users
+    ]
 
 
 # USER
@@ -83,14 +87,14 @@ async def get_all_users():
 
 # Create a user
 @app.post("/users", tags=["users"])
-async def create_user(user: User):
+async def create_user(user: schemas.User):
     USERS.append(user)
     return {"User": user}
 
 
 # Update a user
 @app.put("/users/{user_id}", tags=["users"])
-async def update_user(user_id: UUID, user: User):
+async def update_user(user_id: UUID, user: schemas.User):
     # Check if the user exists
     existing_user = next((usr for usr in USERS if usr["id"] == user_id), None)
     if not existing_user:
@@ -160,14 +164,14 @@ async def get_project(project_id: int):
 
 # Create a project
 @app.post("/projects", tags=["projects"])
-async def create_project(project: Project):
+async def create_project(project: schemas.Project):
     PROJECTS.append(project)
     return {"Project": project}
 
 
 # Update a project
 @app.put("/projects/{project_id}", tags=["projects"])
-async def update_project(project_id: UUID, project: Project):
+async def update_project(project_id: UUID, project: schemas.Project):
     # Check if the project exists
     existing_project = next(  # next() returns the next item in an iterator
         (proj for proj in PROJECTS if proj["id"] == project_id), None
@@ -213,14 +217,14 @@ async def get_project_tasks(project_id: int):
 
 # Create a task for a project
 @app.post("/projects/{project_id}/tasks", tags=["tasks"])
-async def create_project_task(project_id: int, task: Task):
+async def create_project_task(project_id: int, task: schemas.Task):
     PROJECTS[project_id - 1]["tasks"].append(task)
     return {"Task": task}
 
 
 # Update a task (that belongs to a project)
 @app.put("/projects/{project_id}/tasks/{task_id}", tags=["tasks"])
-async def update_project_task(project_id: UUID, task_id: UUID, task: Task):
+async def update_project_task(project_id: UUID, task_id: UUID, task: schemas.Task):
     # Check if the project exists
     existing_project = next(
         (proj for proj in PROJECTS if proj["id"] == project_id), None
