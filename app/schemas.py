@@ -17,6 +17,19 @@ class User(BaseModel):
     )  # Optional since not every user might be assigned to a project immediately
 
 
+class UserResponse(BaseModel):
+    id: UUID
+    name: str = Field(..., min_length=3, max_length=50)
+    email: str = Field(..., min_length=3, max_length=50)
+    role: Role = Field(..., description="Role of the user")
+    projects: Optional[List[UUID]] = Field(
+        default=[], description="List of projects related to this user"
+    )  # Optional since not every user might be assigned to a project immediately
+
+    class Config:
+        from_attributes = True
+
+
 class Task(BaseModel):
     id: UUID
     title: str = Field(..., min_length=3, max_length=50)
