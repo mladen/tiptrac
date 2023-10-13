@@ -12,8 +12,8 @@ from .test_data import PROJECTS, USERS  # importing test data
 
 # from .database import database  # importing database
 
-# from sqlalchemy.orm import Session
-from .database import engine, SessionLocal, Session
+from sqlalchemy.orm import Session, joinedload
+from .database import engine, SessionLocal  # , Session
 
 
 tags_metadata = [
@@ -151,9 +151,14 @@ async def delete_user(user_id: UUID):
 
 # PROJECT
 # Retrieve all projects
-@app.get("/projects", tags=["projects"])
-async def get_all_projects():
-    return {"Projects": PROJECTS}
+@app.get("/projects", response_model=List[schemas.ProjectResponse])
+async def get_projects(db: Session = Depends(get_db)):
+    db_projects = (
+        db.query(models.Project)
+        # .options(joinedload(models.Project.users))
+        .options(joinedload(models.Project.tasks)).all()  # Eagerly loading tasks
+    )
+    return db_projects
 
 
 # Retrieve a project
