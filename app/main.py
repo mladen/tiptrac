@@ -13,6 +13,7 @@ from .test_data import PROJECTS, USERS  # importing test data
 # from .database import database  # importing database
 
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.exc import SQLAlchemyError
 from .database import engine, SessionLocal  # , Session
 
 
@@ -193,9 +194,13 @@ async def create_project(project: schemas.Project, db: Session = Depends(get_db)
         assigned_to_user=project.assigned_to_user,
         status=project.status,
     )
-    db.add(db_project)
-    db.commit()
-    db.refresh(db_project)
+    try:
+        db.add(db_project)
+        db.commit()
+        db.refresh(db_project)
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return db_project
 
 
