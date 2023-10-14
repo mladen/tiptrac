@@ -42,10 +42,10 @@ class Task(BaseModel):
     time_spent: Optional[int] = Field(
         0, description="Time already spent on the task in minutes"
     )
-    assigned_to: Optional[UUID] = Field(
+    assigned_to_user: Optional[UUID] = Field(
         None, description="The user ID responsible for completing this task"
     )
-    project_id: Optional[UUID] = Field(
+    belongs_to_project: Optional[UUID] = Field(
         None, description="The project ID this task is related to"
     )  # The project ID to which this task belongs
     status: Status = Field(default=Status.TODO, description="Status of the task")
@@ -53,38 +53,6 @@ class Task(BaseModel):
     user: Optional[User] = Field(
         None, description="The user responsible for completing this task"
     )
-
-
-class Project(BaseModel):
-    id: UUID
-    title: str = Field(..., min_length=3, max_length=50)
-    description: Optional[str] = Field(
-        None, title="Description of the project", max_length=255
-    )
-    time_estimation: Optional[int] = Field(
-        0, description="Estimated time for the project in minutes"
-    )
-    time_spent: Optional[int] = Field(
-        0, description="Time already spent on the project in minutes"
-    )
-    assigned_to: Optional[UUID] = Field(
-        None, description="The user ID responsible for this project"
-    )
-    status: Status = Field(default=Status.TODO, description="Status of the project")
-    tasks: Optional[List[Task]] = Field(
-        default=[], description="List of tasks related to this project"
-    )  # Optional since not every project will have tasks immediately
-
-
-# class TaskResponse(BaseModel):
-#     id: UUID
-#     title: str
-#     description: Optional[str] = None
-#     time_estimation: Optional[int] = 0
-#     time_spent: Optional[int] = 0
-#     assigned_to: Optional[UUID] = None
-#     project_id: Optional[UUID] = None
-#     status: Status
 
 
 class TaskResponse(BaseModel):
@@ -99,16 +67,48 @@ class TaskResponse(BaseModel):
     time_spent: Optional[int] = Field(
         0, description="Time already spent on the task in minutes"
     )
-    assigned_to: Optional[UUID] = Field(
+    assigned_to_user: Optional[UUID] = Field(
         None, description="The user ID responsible for completing this task"
     )
-    project_id: Optional[UUID] = Field(
+    belongs_to_project: Optional[UUID] = Field(
         None, description="The project ID this task is related to"
     )  # The project ID to which this task belongs
     status: Status = Field(default=Status.TODO, description="Status of the task")
 
     class Config:
         from_attributes = True
+
+
+# class TaskResponse(BaseModel):
+#     id: UUID
+#     title: str
+#     description: Optional[str] = None
+#     time_estimation: Optional[int] = 0
+#     time_spent: Optional[int] = 0
+#     assigned_to: Optional[UUID] = None
+#     project_id: Optional[UUID] = None
+#     status: Status
+
+
+class Project(BaseModel):
+    id: UUID
+    title: str = Field(..., min_length=3, max_length=50)
+    description: Optional[str] = Field(
+        None, title="Description of the project", max_length=255
+    )
+    time_estimation: Optional[int] = Field(
+        0, description="Estimated time for the project in minutes"
+    )
+    time_spent: Optional[int] = Field(
+        0, description="Time already spent on the project in minutes"
+    )
+    assigned_to_user: Optional[UUID] = Field(
+        None, description="The user ID responsible for this project"
+    )
+    status: Status = Field(default=Status.TODO, description="Status of the project")
+    tasks: Optional[List[Task]] = Field(
+        default=[], description="List of tasks related to this project"
+    )  # Optional since not every project will have tasks immediately
 
 
 class ProjectResponse(BaseModel):
@@ -123,7 +123,7 @@ class ProjectResponse(BaseModel):
     time_spent: Optional[int] = Field(
         0, description="Time already spent on the project in minutes"
     )
-    assigned_to: Optional[UUID] = Field(
+    assigned_to_user: Optional[UUID] = Field(
         None, description="The user ID responsible for this project"
     )
     status: Status = Field(default=Status.TODO, description="Status of the project")
