@@ -182,11 +182,21 @@ async def get_project(project_id: UUID, db: Session = Depends(get_db)):
     return db_project
 
 
-# Create a project
-@app.post("/projects", tags=["projects"])
-async def create_project(project: schemas.Project):
-    PROJECTS.append(project)
-    return {"Project": project}
+# Create a project by saving it to the database. Check if there was an error
+@app.post("/projects", response_model=schemas.ProjectResponse, tags=["projects"])
+async def create_project(project: schemas.Project, db: Session = Depends(get_db)):
+    db_project = models.Project(
+        title=project.title,
+        description=project.description,
+        time_estimation=project.time_estimation,
+        time_spent=project.time_spent,
+        assigned_to_user=project.assigned_to_user,
+        status=project.status,
+    )
+    db.add(db_project)
+    db.commit()
+    db.refresh(db_project)
+    return db_project
 
 
 # Update a project
