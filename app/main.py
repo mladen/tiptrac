@@ -151,7 +151,7 @@ async def delete_user(user_id: UUID):
 
 # PROJECT
 # Retrieve all projects
-@app.get("/projects", response_model=List[schemas.ProjectResponse])
+@app.get("/projects", tags=["projects"], response_model=List[schemas.ProjectResponse])
 async def get_projects(db: Session = Depends(get_db)):
     db_projects = (
         db.query(models.Project)
@@ -162,9 +162,24 @@ async def get_projects(db: Session = Depends(get_db)):
 
 
 # Retrieve a project
-@app.get("/projects/{project_id}", tags=["projects"])
-async def get_project(project_id: int):
-    return PROJECTS[project_id - 1]
+@app.get(
+    "/projects/{project_id}",
+    tags=["projects"],  # , response_model=schemas.ProjectResponse
+)
+async def get_project(project_id: UUID, db: Session = Depends(get_db)):
+    print(
+        f"Project ID: {project_id}, Type: {type(project_id)}"
+    )  # Diagnostic print statement
+    db_project = (
+        db.query(models.Project)
+        # .options(joinedload(models.Project.users))
+        .options(joinedload(models.Project.tasks))  # Eagerly loading tasks
+        .filter(models.Project.id == str(project_id))  # Ensure project_id is a string
+        .first()
+    )
+    if not db_project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return db_project
 
 
 # Create a project
