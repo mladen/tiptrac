@@ -291,9 +291,18 @@ async def get_user_project(
 
 # TASK
 # Retrieve all tasks from a project
-@app.get("/projects/{project_id}/tasks", tags=["tasks"])
-async def get_project_tasks(project_id: int):
-    return PROJECTS[project_id - 1]["tasks"]
+@app.get(
+    "/projects/{project_id}/tasks",
+    response_model=List[schemas.TaskResponse],
+    tags=["projects"],
+)
+async def get_project_tasks(project_id: UUID, db: Session = Depends(get_db)):
+    db_project = (
+        db.query(models.Project).filter(models.Project.id == project_id).first()
+    )
+    if db_project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return db_project.tasks
 
 
 # Retrieve a task from a project
