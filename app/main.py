@@ -319,10 +319,13 @@ async def get_project_task(
 
 
 # Create a task for a project
-@app.post("/projects/{project_id}/tasks", tags=["tasks"])
-async def create_project_task(project_id: int, task: schemas.Task):
-    PROJECTS[project_id - 1]["tasks"].append(task)
-    return {"Task": task}
+@app.post("/tasks", response_model=schemas.TaskResponse, tags=["tasks"])
+async def create_task(task: schemas.Task, db: Session = Depends(get_db)):
+    db_task = models.Task(**task.dict())
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
 
 # Update a task (that belongs to a project)
