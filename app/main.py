@@ -183,7 +183,7 @@ async def get_project(project_id: UUID, db: Session = Depends(get_db)):
     return db_project
 
 
-# Create a project by saving it to the database. Check if there was an error
+# Create a project
 @app.post("/projects", response_model=schemas.ProjectResponse, tags=["projects"])
 async def create_project(project: schemas.Project, db: Session = Depends(get_db)):
     db_project = models.Project(
@@ -205,21 +205,30 @@ async def create_project(project: schemas.Project, db: Session = Depends(get_db)
 
 
 # Update a project
-@app.put("/projects/{project_id}", tags=["projects"])
-async def update_project(project_id: UUID, project: schemas.Project):
-    # Check if the project exists
-    existing_project = next(  # next() returns the next item in an iterator
-        (proj for proj in PROJECTS if proj["id"] == project_id), None
+@app.put(
+    "/projects/{project_id}", response_model=schemas.ProjectResponse, tags=["projects"]
+)
+async def update_project(
+    project_id: UUID, project: schemas.Project, db: Session = Depends(get_db)
+):
+    db_project = (
+        db.query(models.Project).filter(models.Project.id == str(project_id)).first()
     )
-    if not existing_project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    if not db_project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
+        )
 
-    # Logic for updating the project
-    index = PROJECTS.index(existing_project)
-    PROJECTS[index] = project.dict()
-    PROJECTS[index]["id"] = project_id  # Ensure we maintain the original UUID
+    for key, value in project.dict().items():
+        setattr(db_project, key, value) if value else None
 
-    return {"Project": project}
+    try:
+        db.commit()
+        db.refresh(db_project)
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return db_project
 
 
 # Delete a project
@@ -280,25 +289,3 @@ async def update_project_task(project_id: UUID, task_id: UUID, task: schemas.Tas
     existing_project["tasks"][index]["id"] = task_id
 
     return {"Task": task}
-
-
-# Delete a task
-@app.delete("/projects/{project_id}/tasks/{task_id}", tags=["tasks"])
-async def delete_project_task(project_id: UUID, task_id: UUID):
-    # Check if the project exists
-    existing_project = next(
-        (proj for proj in PROJECTS if proj["id"] == project_id), None
-    )
-    if not existing_project:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    # Check if the task exists
-    existing_task = next(
-        (tsk for tsk in existing_project["tasks"] if tsk["id"] == task_id), None
-    )
-    if not existing_task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    # Logic for deleting the task
-    existing_project["tasks"].remove(existing_task)
-    return {"message": "Task deleted successfully"}
