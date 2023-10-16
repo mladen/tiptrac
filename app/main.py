@@ -97,10 +97,13 @@ async def get_user(user_id: UUID, db: Session = Depends(get_db)):
 
 
 # Create a user
-@app.post("/users", tags=["users"])
-async def create_user(user: schemas.User):
-    USERS.append(user)
-    return {"User": user}
+@app.post("/users", response_model=schemas.UserResponse, tags=["users"])
+async def create_user(user: schemas.User, db: Session = Depends(get_db)):
+    db_user = models.User(**user.dict())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 
 # Update a user
