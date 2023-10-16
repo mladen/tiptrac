@@ -130,12 +130,6 @@ async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
     return db_user
 
 
-# Retrieve all projects for a user
-# @app.get("/users/{user_id}/projects", tags=["projects"])
-# async def get_user_projects(user_id: UUID4):
-#     return {"Projects": []}
-
-
 # Retrieve a project for a user
 # @app.get("/users/{user_id}/projects/{project_id}", tags=["projects"])
 # async def get_user_project(user_id: UUID4, project_id: UUID4):
@@ -206,6 +200,20 @@ async def create_project(project: schemas.Project, db: Session = Depends(get_db)
         db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return db_project
+
+
+# PROJECT + USER
+# Retrieve all projects for a user
+@app.get(
+    "/users/{user_id}/projects",
+    response_model=List[schemas.ProjectResponse],
+    tags=["users"],
+)
+async def get_user_projects(user_id: UUID, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user.projects
 
 
 # Update a project
