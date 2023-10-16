@@ -87,6 +87,15 @@ async def get_users(db: Session = Depends(get_db)):
     return db_users
 
 
+# Retrieve a user
+@app.get("/users/{user_id}", response_model=schemas.UserResponse, tags=["users"])
+async def get_user(user_id: UUID, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+
 # Create a user
 @app.post("/users", tags=["users"])
 async def create_user(user: schemas.User):
@@ -119,12 +128,6 @@ async def delete_user(user_id: UUID):
     # Logic for deleting the user
     USERS.remove(existing_user)
     return {"message": "User deleted successfully"}
-
-
-# Retrieve a user
-# @app.get("/users/{user_id}", tags=["users"])
-# async def get_user(user_id: UUID4):
-#     return {"User": {}}
 
 
 # Retrieve all projects for a user
