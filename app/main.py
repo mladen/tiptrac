@@ -329,28 +329,26 @@ async def create_task(task: schemas.Task, db: Session = Depends(get_db)):
 
 
 # Update a task (that belongs to a project)
-@app.put("/projects/{project_id}/tasks/{task_id}", tags=["tasks"])
-async def update_project_task(project_id: UUID, task_id: UUID, task: schemas.Task):
-    # Check if the project exists
-    existing_project = next(
-        (proj for proj in PROJECTS if proj["id"] == project_id), None
+@app.put(
+    "/projects/{project_id}/tasks/{task_id}",
+    response_model=schemas.TaskResponse,
+    tags=["projects"],
+)
+async def update_project_task(
+    project_id: UUID, task_id: UUID, task: schemas.Task, db: Session = Depends(get_db)
+):
+    db_task = (
+        db.query(models.Task)
+        .filter(models.Task.id == task_id, models.Task.belongs_to_project == project_id)
+        .first()
     )
-    if not existing_project:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    # Check if the task exists
-    existing_task = next(
-        (tsk for tsk in existing_project["tasks"] if tsk["id"] == task_id), None
-    )
-    if not existing_task:
+    if db_task is None:
         raise HTTPException(status_code=404, detail="Task not found")
-
-    # Logic for updating the task
-    index = existing_project["tasks"].index(existing_task)
-    existing_project["tasks"][index] = task.dict()
-    existing_project["tasks"][index]["id"] = task_id
-
-    return {"Task": task}
+    for key, value in task.dict().items():
+        setattr(db_task, key, value)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
 
 # TASK + USER
