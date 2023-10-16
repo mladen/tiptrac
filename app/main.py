@@ -120,16 +120,14 @@ async def update_user(user_id: UUID, user: schemas.User, db: Session = Depends(g
 
 
 # Delete a user
-@app.delete("/users/{user_id}", tags=["users"])
-async def delete_user(user_id: UUID):
-    # Check if the user exists
-    existing_user = next((usr for usr in USERS if usr["id"] == user_id), None)
-    if not existing_user:
+@app.delete("/users/{user_id}", response_model=schemas.UserResponse, tags=["users"])
+async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-
-    # Logic for deleting the user
-    USERS.remove(existing_user)
-    return {"message": "User deleted successfully"}
+    db.delete(db_user)
+    db.commit()
+    return db_user
 
 
 # Retrieve all projects for a user
