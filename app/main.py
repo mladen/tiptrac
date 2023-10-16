@@ -211,6 +211,7 @@ async def create_project(project: schemas.Project, db: Session = Depends(get_db)
 async def update_project(
     project_id: UUID, project: schemas.Project, db: Session = Depends(get_db)
 ):
+    # Check if the project exists
     db_project = (
         db.query(models.Project).filter(models.Project.id == str(project_id)).first()
     )
@@ -218,6 +219,18 @@ async def update_project(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
         )
+
+    # Check if the user exists
+    if project.assigned_to_user:  # If the user ID is provided
+        db_user = (
+            db.query(models.User)
+            .filter(models.User.id == str(project.assigned_to_user))
+            .first()
+        )
+        if not db_user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
 
     for key, value in project.dict().items():
         setattr(db_project, key, value) if value else None
