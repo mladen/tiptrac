@@ -245,18 +245,18 @@ async def update_project(
 
 
 # Delete a project
-@app.delete("/projects/{project_id}", tags=["projects"])
-async def delete_project(project_id: UUID):
-    # Check if the project exists
-    existing_project = next(
-        (proj for proj in PROJECTS if proj["id"] == project_id), None
+@app.delete(
+    "/projects/{project_id}", response_model=schemas.ProjectResponse, tags=["projects"]
+)
+async def delete_project(project_id: UUID, db: Session = Depends(get_db)):
+    db_project = (
+        db.query(models.Project).filter(models.Project.id == str(project_id)).first()
     )
-    if not existing_project:
+    if db_project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-
-    # Logic for deleting the project
-    PROJECTS.remove(existing_project)
-    return {"message": "Project deleted successfully"}
+    db.delete(db_project)
+    db.commit()
+    return db_project
 
 
 # TASK
