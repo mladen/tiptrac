@@ -81,9 +81,10 @@ async def login(
 
 
 # Retrieve all users
-@app.get("/users", tags=["users"])
-async def get_all_users():
-    return {"Users": USERS}
+@app.get("/users", response_model=List[schemas.UserResponse], tags=["users"])
+async def get_users(db: Session = Depends(get_db)):
+    db_users = db.query(models.User).all()
+    return db_users
 
 
 # Create a user
