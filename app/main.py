@@ -130,12 +130,6 @@ async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
     return db_user
 
 
-# Retrieve a project for a user
-# @app.get("/users/{user_id}/projects/{project_id}", tags=["projects"])
-# async def get_user_project(user_id: UUID4, project_id: UUID4):
-#     return {"Project": {}}
-
-
 # Retrieve all tasks for a user
 # @app.get("/users/{user_id}/tasks", tags=["tasks"])
 # async def get_user_tasks(user_id: UUID4):
@@ -214,6 +208,30 @@ async def get_user_projects(user_id: UUID, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.projects
+
+
+# Retrieve a project for a user
+@app.get(
+    "/users/{user_id}/projects/{project_id}",
+    response_model=schemas.ProjectResponse,
+    tags=["users"],
+)
+async def get_user_project(
+    user_id: UUID, project_id: UUID, db: Session = Depends(get_db)
+):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db_project = (
+        db.query(models.Project)
+        .filter(
+            models.Project.id == project_id, models.Project.assigned_to_user == user_id
+        )
+        .first()
+    )
+    if db_project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return db_project
 
 
 # Update a project
