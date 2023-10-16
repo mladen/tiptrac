@@ -306,9 +306,22 @@ async def get_project_tasks(project_id: UUID, db: Session = Depends(get_db)):
 
 
 # Retrieve a task from a project
-# @app.get("/projects/{project_id}/tasks/{task_id}", tags=["tasks"])
-# async def get_project_task(project_id: int, task_id: int):
-#     return PROJECTS[project_id - 1]["tasks"][task_id - 1]
+@app.get(
+    "/projects/{project_id}/tasks/{task_id}",
+    response_model=schemas.TaskResponse,
+    tags=["projects"],
+)
+async def get_project_task(
+    project_id: UUID, task_id: UUID, db: Session = Depends(get_db)
+):
+    db_task = (
+        db.query(models.Task)
+        .filter(models.Task.id == task_id, models.Task.belongs_to_project == project_id)
+        .first()
+    )
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return db_task
 
 
 # Create a task for a project
