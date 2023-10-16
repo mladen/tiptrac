@@ -107,17 +107,16 @@ async def create_user(user: schemas.User, db: Session = Depends(get_db)):
 
 
 # Update a user
-@app.put("/users/{user_id}", tags=["users"])
-async def update_user(user_id: UUID, user: schemas.User):
-    # Check if the user exists
-    existing_user = next((usr for usr in USERS if usr["id"] == user_id), None)
-    if not existing_user:
+@app.put("/users/{user_id}", response_model=schemas.UserResponse, tags=["users"])
+async def update_user(user_id: UUID, user: schemas.User, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-
-    # Logic for updating the user
-    index = USERS.index(existing_user)
-    USERS[index] = user.dict()
-    USERS[index]["id"] = user_id
+    for key, value in user.dict().items():
+        setattr(db_user, key, value)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 
 # Delete a user
