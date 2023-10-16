@@ -130,12 +130,6 @@ async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
     return db_user
 
 
-# Retrieve all tasks for a user
-# @app.get("/users/{user_id}/tasks", tags=["tasks"])
-# async def get_user_tasks(user_id: UUID4):
-#     return {"Tasks": []}
-
-
 # Retrieve a task for a user
 # @app.get("/users/{user_id}/tasks/{task_id}", tags=["tasks"])
 # async def get_user_task(user_id: UUID4, task_id: UUID4):
@@ -354,3 +348,15 @@ async def update_project_task(project_id: UUID, task_id: UUID, task: schemas.Tas
     existing_project["tasks"][index]["id"] = task_id
 
     return {"Task": task}
+
+
+# TASK + USER
+# Retrieve all tasks for a user
+@app.get(
+    "/users/{user_id}/tasks", response_model=List[schemas.TaskResponse], tags=["users"]
+)
+async def get_user_tasks(user_id: UUID, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user.tasks
