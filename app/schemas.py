@@ -12,6 +12,7 @@ class User(BaseModel):
     name: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., min_length=3, max_length=50)
     role: Role = Field(..., description="Role of the user")
+    hashed_password: str = Field(..., min_length=10, max_length=255)
     projects: Optional[List[UUID]] = Field(
         default=[], description="List of projects related to this user"
     )  # Optional since not every user might be assigned to a project immediately
