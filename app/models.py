@@ -24,7 +24,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # projects = relationship("Project", back_populates="users")
+    projects = relationship("Project", back_populates="user")
     tasks = relationship("Task", back_populates="user")
 
 
@@ -53,7 +53,7 @@ class Project(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # user = relationship("User", back_populates="projects")
+    user = relationship("User", back_populates="projects")
     tasks = relationship("Task", back_populates="project")
 
 
