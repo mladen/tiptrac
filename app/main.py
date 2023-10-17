@@ -8,7 +8,6 @@ from uuid import UUID
 
 # from .schemas import User, UserResponse, Project, Task  # importing models
 from . import schemas, models  # importing Pydantic models and DB models
-from .test_data import PROJECTS, USERS  # importing test data
 
 # from .database import database  # importing database
 
@@ -68,16 +67,16 @@ async def read_all(db: Session = Depends(get_db)):
 
 # USER
 # Login
-@app.post("/login/", tags=["users"])
-async def login(
-    project_position: int,  # Path parameter (required) which represents the position in the PROJECTS list
-    username: Optional[str] = Header(None),
-    password: Optional[str] = Header(None),
-):
-    if username == "FastAPIUser" and password == "pwd1234!":
-        return PROJECTS[project_position - 1]
-    else:
-        raise HTTPException(status_code=400, detail="Missing username or password")
+# @app.post("/login/", tags=["users"])
+# async def login(
+#     project_position: int,  # Path parameter (required) which represents the position in the PROJECTS list
+#     username: Optional[str] = Header(None),
+#     password: Optional[str] = Header(None),
+# ):
+#     if username == "FastAPIUser" and password == "pwd1234!":
+#         return PROJECTS[project_position - 1]
+#     else:
+#         raise HTTPException(status_code=400, detail="Missing username or password")
 
 
 # Retrieve all users
