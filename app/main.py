@@ -53,18 +53,6 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
-@app.get("/", response_model=List[schemas.UserResponse], tags=["users"])
-async def read_all(db: Session = Depends(get_db)):
-    db_users = db.query(models.User).all()  # Querying the database
-    # Converting SQLAlchemy models to Pydantic models before returning
-    return [
-        schemas.UserResponse(
-            id=user.id, name=user.name, email=user.email, role=user.role, projects=[]
-        )
-        for user in db_users
-    ]
-
-
 # USER
 # Login
 # @app.post("/login/", tags=["users"])
@@ -79,11 +67,17 @@ async def read_all(db: Session = Depends(get_db)):
 #         raise HTTPException(status_code=400, detail="Missing username or password")
 
 
-# Retrieve all users
+# Retrieves a list of all users
 @app.get("/users", response_model=List[schemas.UserResponse], tags=["users"])
 async def get_users(db: Session = Depends(get_db)):
-    db_users = db.query(models.User).all()
-    return db_users
+    db_users = db.query(models.User).all()  # Querying the database
+    # Converting SQLAlchemy models to Pydantic models before returning
+    return [
+        schemas.UserResponse(
+            id=user.id, name=user.name, email=user.email, role=user.role, projects=[]
+        )
+        for user in db_users
+    ]
 
 
 # Retrieve a user
