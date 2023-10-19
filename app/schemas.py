@@ -143,5 +143,5 @@ class ProjectResponse(BaseModel):
 
 Project.update_forward_refs()
 # Task.update_forward_refs()
-# UserResponse.update_forward_refs()
+UserResponse.update_forward_refs()
 # ProjectResponse.update_forward_refs()
