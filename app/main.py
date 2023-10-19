@@ -255,7 +255,7 @@ async def delete_project(project_id: UUID, db: Session = Depends(get_db)):
 @app.get(
     "/users/{user_id}/projects",
     response_model=List[schemas.ProjectResponse],
-    tags=["users"],
+    tags=["projects"],
 )
 async def get_user_projects(user_id: UUID, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
@@ -268,7 +268,7 @@ async def get_user_projects(user_id: UUID, db: Session = Depends(get_db)):
 @app.get(
     "/users/{user_id}/projects/{project_id}",
     response_model=schemas.ProjectResponse,
-    tags=["users"],
+    tags=["projects"],
 )
 async def get_user_project(
     user_id: UUID, project_id: UUID, db: Session = Depends(get_db)
