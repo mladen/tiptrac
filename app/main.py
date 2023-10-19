@@ -12,7 +12,7 @@ from . import schemas, models  # importing Pydantic models and DB models
 # from .database import database  # importing database
 
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from .database import engine, SessionLocal  # , Session
 
 
@@ -93,8 +93,20 @@ async def get_user(user_id: UUID, db: Session = Depends(get_db)):
 @app.post("/users", response_model=schemas.UserResponse, tags=["users"])
 async def create_user(user: schemas.User, db: Session = Depends(get_db)):
     db_user = models.User(**user.dict())
-    db.add(db_user)
-    db.commit()
+    try:
+        db.add(db_user)
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Integrity Error: Possible duplicate or required field missing",
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500, detail="An error occurred while creating the user"
+        )
     db.refresh(db_user)
     return db_user
 
