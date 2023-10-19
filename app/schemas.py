@@ -1,7 +1,7 @@
 # Pydantic models that define and validate the shape of API data
 
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, ForwardRef
 from uuid import UUID, uuid4
 
 from .enums import Role, Status
@@ -18,12 +18,15 @@ class User(BaseModel):
     )  # Optional since not every user might be assigned to a project immediately
 
 
+ProjectRef = ForwardRef("Project")
+
+
 class UserResponse(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     name: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., min_length=3, max_length=50)
     role: Role = Field(..., description="Role of the user")
-    projects: Optional[List[UUID]] = Field(
+    projects: Optional[List[ProjectRef]] = Field(
         default=[], description="List of projects related to this user"
     )  # Optional since not every user might be assigned to a project immediately
 
@@ -90,6 +93,8 @@ class TaskResponse(BaseModel):
 #     project_id: Optional[UUID] = None
 #     status: Status
 
+TaskRef = ForwardRef("Task")
+
 
 class Project(BaseModel):
     id: UUID = Field(default_factory=uuid4)
@@ -107,7 +112,7 @@ class Project(BaseModel):
         None, description="The user ID responsible for this project"
     )
     status: Status = Field(default=Status.TODO, description="Status of the project")
-    tasks: Optional[List[Task]] = Field(
+    tasks: Optional[List[TaskRef]] = Field(
         default=[], description="List of tasks related to this project"
     )  # Optional since not every project will have tasks immediately
 
@@ -134,3 +139,9 @@ class ProjectResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+Project.update_forward_refs()
+# Task.update_forward_refs()
+# UserResponse.update_forward_refs()
+# ProjectResponse.update_forward_refs()
