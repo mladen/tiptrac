@@ -127,7 +127,7 @@ async def update_user(user_id: UUID, user: schemas.User, db: Session = Depends(g
 # Delete a user
 @app.delete("/users/{user_id}", response_model=schemas.UserResponse, tags=["users"])
 async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    db_user = db.query(models.User).filter(models.User.id == str(user_id)).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(db_user)
