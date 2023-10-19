@@ -56,7 +56,7 @@ class Task(BaseModel):
 
     user: Optional[User] = Field(
         None, description="The user responsible for completing this task"
-    )
+    )  # Optional since not every task might be assigned to a user immediately
 
 
 class TaskResponse(BaseModel):
