@@ -2,13 +2,13 @@
 
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from .enums import Role, Status
 
 
 class User(BaseModel):
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     name: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., min_length=3, max_length=50)
     role: Role = Field(..., description="Role of the user")
@@ -19,7 +19,7 @@ class User(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     name: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., min_length=3, max_length=50)
     role: Role = Field(..., description="Role of the user")
@@ -32,7 +32,7 @@ class UserResponse(BaseModel):
 
 
 class Task(BaseModel):
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
         None, title="Description of the task", max_length=255
@@ -57,7 +57,7 @@ class Task(BaseModel):
 
 
 class TaskResponse(BaseModel):
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
         None, title="Description of the task", max_length=255
@@ -81,7 +81,7 @@ class TaskResponse(BaseModel):
 
 
 # class TaskResponse(BaseModel):
-#     id: UUID
+#     id: UUID = Field(default_factory=uuid4)
 #     title: str
 #     description: Optional[str] = None
 #     time_estimation: Optional[int] = 0
@@ -92,7 +92,7 @@ class TaskResponse(BaseModel):
 
 
 class Project(BaseModel):
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
         None, title="Description of the project", max_length=255
@@ -113,7 +113,7 @@ class Project(BaseModel):
 
 
 class ProjectResponse(BaseModel):
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     title: str = Field(..., min_length=3, max_length=50)
     description: Optional[str] = Field(
         None, title="Description of the project", max_length=255
