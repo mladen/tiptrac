@@ -297,18 +297,6 @@ async def get_user_project(
     return db_project
 
 
-# TASK + USER
-# Retrieve all tasks for a user
-@app.get(
-    "/users/{user_id}/tasks", response_model=List[schemas.TaskResponse], tags=["tasks"]
-)
-async def get_user_tasks(user_id: UUID, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.id == user_id).first()
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user.tasks
-
-
 # TASK + PROJECT
 # Retrieve all tasks from a project
 @app.get(
