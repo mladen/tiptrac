@@ -188,10 +188,18 @@ async def create_project(project: schemas.Project, db: Session = Depends(get_db)
     try:
         db.add(db_project)
         db.commit()
-        db.refresh(db_project)
-    except SQLAlchemyError as e:
+    except IntegrityError as e:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(
+            status_code=400,
+            detail="Integrity Error: Possible duplicate or required field missing",
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500, detail="An error occurred while creating the project"
+        )
+    db.refresh(db_project)
     return db_project
 
 
