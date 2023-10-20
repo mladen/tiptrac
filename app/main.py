@@ -281,13 +281,14 @@ async def get_user_projects(user_id: UUID, db: Session = Depends(get_db)):
 async def get_user_project(
     user_id: UUID, project_id: UUID, db: Session = Depends(get_db)
 ):
-    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    db_user = db.query(models.User).filter(models.User.id == str(user_id)).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     db_project = (
         db.query(models.Project)
         .filter(
-            models.Project.id == project_id, models.Project.assigned_to_user == user_id
+            models.Project.id == str(project_id),
+            models.Project.assigned_to_user == str(user_id),
         )
         .first()
     )
