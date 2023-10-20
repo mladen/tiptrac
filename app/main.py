@@ -306,7 +306,7 @@ async def get_user_project(
 )
 async def get_project_tasks(project_id: UUID, db: Session = Depends(get_db)):
     db_project = (
-        db.query(models.Project).filter(models.Project.id == project_id).first()
+        db.query(models.Project).filter(models.Project.id == str(project_id)).first()
     )
     if db_project is None:
         raise HTTPException(status_code=404, detail="Project not found")
