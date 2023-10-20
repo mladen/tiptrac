@@ -356,7 +356,10 @@ async def update_project_task(
 ):
     db_task = (
         db.query(models.Task)
-        .filter(models.Task.id == task_id, models.Task.belongs_to_project == project_id)
+        .filter(
+            models.Task.id == str(task_id),
+            models.Task.belongs_to_project == str(project_id),
+        )
         .first()
     )
     if db_task is None:
