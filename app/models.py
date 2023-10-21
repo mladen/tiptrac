@@ -24,7 +24,10 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    projects = relationship("Project", back_populates="user")
+    projects = relationship(
+        "Project", back_populates="user"
+    )  # One-to-many relationship
+    # BTW, "user" is the name of the relationship in the Project model
 
 
 class Project(Base):
@@ -52,8 +55,12 @@ class Project(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    user = relationship("User", back_populates="projects")
-    tasks = relationship("Task", back_populates="project")
+    user = relationship(
+        "User", back_populates="projects"
+    )  # Many-to-one relationship; "user" is the name of the relationship in the User model
+    tasks = relationship(
+        "Task", back_populates="project"
+    )  # One-to-many relationship; "project" is the name of the relationship in the Task model
 
 
 class Task(Base):
@@ -81,4 +88,6 @@ class Task(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    project = relationship("Project", back_populates="tasks")
+    project = relationship(
+        "Project", back_populates="tasks"
+    )  # Many-to-one relationship; "project" is the name of the relationship in the Project model
