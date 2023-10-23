@@ -32,8 +32,14 @@ async def create_user(user: CreateUser):
     create_user_model.name = user.name
     create_user_model.email = user.email
     # create_user_model.role = user.role
-    create_user_model.password = user.password
-    create_user_model.hashed_password = user.password
+
+    create_user_model.hashed_password = bcrypt.hashpw(
+        user.password.encode(
+            "utf-8"
+        ),  # user.password.encode("utf-8") encodes the password to bytes
+        bcrypt.gensalt(),
+    )
+
     create_user_model.is_active = True
 
     return create_user_model
