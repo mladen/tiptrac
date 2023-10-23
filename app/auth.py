@@ -33,6 +33,12 @@ def get_db():
 
 @app.post("/create/user")
 async def create_user(user: CreateUser, db: Session = Depends(get_db)):
+    existing_user = (
+        db.query(models.User).filter(models.User.email == user.email).first()
+    )
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
     create_user_model = models.User()
     create_user_model.name = user.name
     create_user_model.email = user.email
