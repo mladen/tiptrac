@@ -5,6 +5,16 @@ from .enums import Role, Status
 
 from . import models
 
+import bcrypt
+
+password = b"super secret password"
+hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+
+if bcrypt.checkpw(password, hashed):
+    print("It Matches! The password is: " + password.decode("utf-8"))
+else:
+    print("It Does not Match :(")
+
 
 class CreateUser(BaseModel):
     name: str
