@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from .enums import Role, Status
 
 from . import models
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from .database import SessionLocal, engine
 
 import bcrypt
@@ -46,6 +47,10 @@ async def create_user(user: CreateUser, db: Session = Depends(get_db)):
 
     create_user_model.is_active = True
 
-    db.add(create_user_model)
-    db.commit()
-    db.refresh(create_user_model)
+    try:
+        db.add(create_user_model)
+        db.commit()
+        db.refresh(create_user_model)
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
