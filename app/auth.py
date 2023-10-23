@@ -1,19 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from typing import Optional
 from .enums import Role, Status
 
 from . import models
+from sqlalchemy.orm import Session
+from .database import SessionLocal, engine
 
 import bcrypt
-
-password = b"super secret password"
-hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-
-if bcrypt.checkpw(password, hashed):
-    print("It Matches! The password is: " + password.decode("utf-8"))
-else:
-    print("It Does not Match :(")
 
 
 class CreateUser(BaseModel):
@@ -23,11 +17,21 @@ class CreateUser(BaseModel):
     password: str
 
 
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 @app.post("/create/user")
-async def create_user(user: CreateUser):
+async def create_user(user: CreateUser, db: Session = Depends(get_db)):
     create_user_model = models.User()
     create_user_model.name = user.name
     create_user_model.email = user.email
@@ -42,4 +46,6 @@ async def create_user(user: CreateUser):
 
     create_user_model.is_active = True
 
-    return create_user_model
+    db.add(create_user_model)
+    db.commit()
+    db.refresh(create_user_model)
