@@ -1,5 +1,5 @@
 # Use the official Python image from the DockerHub
-FROM python:3.11
+FROM python:3.10
 
 # Set the working directory in the container
 WORKDIR /code
@@ -14,4 +14,5 @@ RUN pip install --no-cache-dir -r /code/requirements.txt
 COPY ./app /code/app
 
 # Specify the command to run on container start
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+CMD ["uvicorn", "app.auth:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
